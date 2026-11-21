@@ -1,0 +1,15 @@
+from common import *
+A=load('phaseA'); B=load('phaseB'); C=load('phaseC')
+v=lambda r:round(r['val'],3)
+best={}
+best['ridge_d1']=max([r for r in A['ridge'] if r['degree']==1],key=lambda r:(v(r),r['alpha']))
+best['ridge_poly']=max([r for r in A['ridge'] if r['degree']>1],key=lambda r:(v(r),r['alpha']))
+best['logreg']=max(A['logreg'],key=lambda r:(v(r),-r['C']))
+best['perceptron']=max(A['perceptron'],key=lambda r:round(r['val_mean'],3))
+best['svm_linear']=max(B['linear'],key=lambda r:(v(r),-r['C']))
+best['svm_poly']=max(B['poly'],key=lambda r:(v(r),-r['C'],-r['degree']))
+best['svm_rbf']=max(B['rbf'],key=lambda r:(v(r),-r['C'],-r['gamma']))
+best['mlp_lr']=max(C['lr'],key=lambda r:v(r)); best['mlp_alpha']=max(C['alpha'],key=lambda r:(v(r),r['alpha']))
+best['mlp_grid']=max(C['grid'],key=v)
+save('best',best)
+for k,x in best.items(): print(k,{a:(round(b,4) if isinstance(b,float) else b) for a,b in x.items() if a not in('val',)}, 'val',round(x.get('val',x.get('val_mean',0)),4))
